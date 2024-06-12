@@ -1,5 +1,7 @@
 {
   "dependencies": [
-    "fmt"
+    "fmt",
+    "websocketpp",
+    "asio"
   ]
 }

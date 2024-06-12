@@ -9,14 +9,27 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-set(fmt_DIR "D:\\C_C++\\khang_exchange\\khang_exchange\\out\\build\\x86-debug\\vcpkg_installed\\vcpkg\\pkgs\\fmt_x86-windows\\share\\fmt")
 
+# Project build
 project ("khang_exchange")
+
+# Set the C++ standard to C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Force C++ 11 standard, so websocketpp doesn't look for Boost. 
+# Note: Under Mingw, seems to have a warning that Boost.Thread is still required.
+add_definitions(-D_WEBSOCKETPP_CPP11_STRICT_)
+
+# Packages
 find_package(fmt CONFIG REQUIRED)
+find_package(websocketpp REQUIRED)
 
 # Add source to this project's executable.
-add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.h")
+add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.h" "myServer.hpp" "myServer.cpp")
 target_link_libraries(khang_exchange PRIVATE fmt::fmt)
+target_link_libraries(khang_exchange PUBLIC websocketpp::websocketpp)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET khang_exchange PROPERTY CXX_STANDARD 20)

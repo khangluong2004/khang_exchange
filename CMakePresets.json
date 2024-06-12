@@ -61,8 +61,8 @@
   ],
   "buildPresets": [
     {
-      "name": "x86-debug",
-      "configurePreset": "x86-debug"
+      "name": "x64-debug",
+      "configurePreset": "x64-debug"
     }
   ]
 }

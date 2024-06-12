@@ -2,11 +2,11 @@
 //
 
 #include "khang_exchange.h"
-
-using namespace std;
+#include "myServer.hpp"
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+	myServer server;
+	server.run();
 	return 0;
 }
