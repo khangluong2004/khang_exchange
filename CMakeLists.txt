@@ -26,12 +26,14 @@ add_definitions(-D_WEBSOCKETPP_CPP11_STRICT_)
 find_package(fmt CONFIG REQUIRED)
 find_package(websocketpp REQUIRED)
 find_package(jsoncpp REQUIRED)
+find_package(asio REQUIRED)
 
 # Add source to this project's executable.
 add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.hpp" "myServer.hpp" "myServer.cpp")
 target_link_libraries(khang_exchange PRIVATE fmt::fmt)
 target_link_libraries(khang_exchange PRIVATE websocketpp::websocketpp)
 target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)
+target_link_libraries(khang_exchange PRIVATE asio)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET khang_exchange PROPERTY CXX_STANDARD 20)

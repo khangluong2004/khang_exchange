@@ -6,7 +6,13 @@
 
 int main()
 {
+	// Initialize key variables
+	// Main event loop
+	asio::io_service mainEventLoop;
+	// WebSocketServer
 	myServer server;
+
+
 	auto runServerFunc = [&server] {
 		try {
 			server.run();
@@ -19,10 +25,12 @@ int main()
 		}
 	};
 
-	// Networking thread
+	// Start networking thread
 	std::thread networkThread(runServerFunc);
 
-	// Block the main thread until the network thread return
-	networkThread.join();
+	// Keep the main event loop runnning on the main thread
+	asio::io_service::work work(mainEventLoop);
+	mainEventLoop.run();
+
 	return 0;
 }
