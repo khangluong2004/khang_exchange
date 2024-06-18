@@ -4,7 +4,10 @@
 1. Set up Websocket echo server: Done
 	a. Add json parser: Done
 	b. Handle multiple connections: Done
-	c. Handle basic thread: Done
+	c. Handle basic thread + IO-thread: Done
+	d. Update myServer to include the IO-thread + Consider event driven: TODO
+	e. Test basic logger with IO-thread: TODO
+	f. Set up thread-pool: TODO
 2. Add send/ receive orders features
 3. Add matching orders feature
 4. Add logger
@@ -57,7 +60,9 @@ If the counter is positive, lock process decrements the count and allows access;
 Unlock process increments the counter.
 
 4. Condition variable (sdt::condition_variable): Used to wait until desirable state change is reached (eg: count reached 10).
-Used with while loop to repeatedly wait until the correct condition.3 main methods:	i. wait(lock: mutex): Automatically released lock, put thread to sleep until the thread is notified.
+Used with while loop to repeatedly wait until the correct condition.
+3 main methods:
+	i. wait(lock: mutex): Automatically released lock, put thread to sleep until the thread is notified.
 	When wake up, acquire lock automatically until return.
 	ii. notify_one(): Wake up one sleeping thread.
 	iii. notify_all(): Wake up all sleeping threads.
