@@ -10,7 +10,10 @@
 
 #include <functional>
 #include <iostream>
+#include <algorithm>
+
 #include <string>
+#include <vector>
 
 /// <summary>
 /// Websocket:
@@ -29,6 +32,7 @@ typedef asioServer::message_ptr message_ptr;
 class myServer {
 private:
 	asioServer m_endpoint;
+	std::vector<ClientConnection> allConnections;
 protected:
 	void onOpen(ClientConnection connection);
 
@@ -38,8 +42,9 @@ protected:
 
 	Json::Value parseJson(const std::string& json);
 	std::string stringify(const Json::Value& val);
+	void sendJsonMessage(ClientConnection connection, const Json::Value& body);
 public:
 	myServer();
 
-	void run();
+	void run(int port = 8080);
 };

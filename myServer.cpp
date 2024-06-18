@@ -2,10 +2,36 @@
 
 void myServer::onOpen(ClientConnection connection) {
 	std::cout << "Open connection" << std::endl;
+	allConnections.push_back(connection);
 }
 
 void myServer::onClose(ClientConnection connection) {
 	std::cout << "Close connection" << std::endl;
+
+	// Promote the connection from weak pointer to shared pointer for comparison
+	auto connectionVal = connection.lock();
+	// Earse-remove idiom
+	// "Remove" all expired and the correct connection
+	// Unlike erase, remove if move the values to the end of the vector,
+	// and change the end iterator
+	auto newEnd = std::remove_if(allConnections.begin(), allConnections.end(), 
+		[&connectionVal](const ClientConnection& element){
+			// Remove expired weak pointer
+			if (element.expired()) {
+				return true;
+			}
+
+			// Remove the connection that is closed
+			if (element.lock().get() == connectionVal.get()) {
+				return true;
+			}
+
+			return false;
+		}
+	);
+
+	// Erase all the element from new end to old end (removed elements)
+	allConnections.erase(newEnd, allConnections.end());
 }
 
 void myServer::onMessage(ClientConnection connection, message_ptr msg) {
@@ -32,6 +58,16 @@ void myServer::onMessage(ClientConnection connection, message_ptr msg) {
 	}
 	catch (websocketpp::exception const& e) {
 		std::cout << "Echo failed because: "
+			<< e.what() << std::endl;
+	}
+}
+
+void myServer::sendJsonMessage(ClientConnection connection, const Json::Value& body){
+	try {
+		m_endpoint.send(connection, myServer::stringify(body), websocketpp::frame::opcode::text);
+	}
+	catch (websocketpp::exception const& e) {
+		std::cout << "Send message failed because: "
 			<< e.what() << std::endl;
 	}
 }
@@ -65,10 +101,10 @@ myServer::myServer() {
 	m_endpoint.init_asio();
 }
 
-void myServer::run() {
+void myServer::run(int port) {
 	// NEED CATCHING FOR EXCEPTION
 	// Listen on port 8080
-	m_endpoint.listen(8080);
+	m_endpoint.listen(port);
 	std::cout << "Server running on port 8080" << std::endl;
 
 	// Queue connection accept operation
