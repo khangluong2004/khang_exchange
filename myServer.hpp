@@ -6,8 +6,11 @@
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 
+#include <json/json.h>
+
 #include <functional>
 #include <iostream>
+#include <string>
 
 /// <summary>
 /// Websocket:
@@ -32,6 +35,9 @@ protected:
 	void onClose(ClientConnection connection);
 
 	void onMessage(ClientConnection connection, message_ptr msg);
+
+	Json::Value parseJson(const std::string& json);
+	std::string stringify(const Json::Value& val);
 public:
 	myServer();
 

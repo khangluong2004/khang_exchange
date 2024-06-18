@@ -2,6 +2,7 @@
   "dependencies": [
     "fmt",
     "websocketpp",
-    "asio"
+    "asio",
+    "jsoncpp"
   ]
 }

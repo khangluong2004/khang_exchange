@@ -11,16 +11,22 @@ void myServer::onClose(ClientConnection connection) {
 void myServer::onMessage(ClientConnection connection, message_ptr msg) {
 	std::cout << "Received message" << std::endl;
 	std::cout << "Opcode: " << msg->get_opcode() << std::endl;
-	std::cout << "Payload: " << msg->get_payload() << std::endl;
 	std::cout << "On Hdl channel: " << connection.lock().get() << std::endl;
 
 	// Check for special command to stop the server
-	if (msg->get_payload() == "stop-listening") {
+	/*if (msg->get_payload() == "stop-listening") {
 		m_endpoint.stop_listening();
 		return;
+	}*/
+
+	// Process payload in json
+
+	Json::Value messageObj = this->parseJson(msg->get_payload());
+	for (auto& key : messageObj.getMemberNames()) {
+		std::cout << "\t" << key << ": " << messageObj[key].asString() << std::endl;
 	}
 
-	// Otherwise, echo back the value for now
+	// Echo back the value for now
 	try {
 		m_endpoint.send(connection, msg->get_payload(), msg->get_opcode());
 	}
@@ -29,6 +35,21 @@ void myServer::onMessage(ClientConnection connection, message_ptr msg) {
 			<< e.what() << std::endl;
 	}
 }
+
+Json::Value myServer::parseJson(const std::string& json) {
+	Json::Value root;
+	Json::Reader reader;
+	reader.parse(json, root);
+	return root;
+}
+
+std::string myServer::stringify(const Json::Value& root) {
+	Json::StreamWriterBuilder wbuilder;
+	wbuilder["commentStyle"] = "None";
+	wbuilder["indentation"] = "";
+	return Json::writeString(wbuilder, root);
+}
+
 myServer::myServer() {
 	// Set logging settings
 	m_endpoint.set_error_channels(websocketpp::log::elevel::all);
