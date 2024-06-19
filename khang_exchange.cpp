@@ -47,6 +47,14 @@ int main()
 		}
 	);
 
+	// Add broadcast message handlers
+	// Broadcast is run on the network thread
+	server.addMessageHandler("broadcast",
+		[&server](ClientConnection connection, const Json::Value& messageObj) {
+			server.broadcast(messageObj);
+		}
+	);
+
 
 	// Start networking thread
 	auto runServerFunc = [&server] {

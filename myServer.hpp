@@ -11,6 +11,7 @@
 #include <functional>
 #include <iostream>
 #include <algorithm>
+#include <mutex>
 
 #include <string>
 #include <vector>
@@ -33,11 +34,13 @@ typedef asioServer::message_ptr message_ptr;
 class myServer {
 private:
 	asioServer m_endpoint;
+	// Need lock to ensure thread-safe
+	std::mutex connectionListMutex;
 	std::vector<ClientConnection> allConnections;
 
 	// Storing handlers for event-driven pattern
-	// Register handlers run on the io network thread,
-	// but running them is on the io main thread
+	// Register handlers cannot have race conditions, since the async listening only starts after that,
+	// Running handlers is on the io main thread mainEventLoop
 	std::vector<std::function<void(ClientConnection)>> openHandlers;
 	std::vector<std::function<void(ClientConnection)>> closeHandlers;
 	std::map<std::string, std::vector<std::function<void(ClientConnection, const Json::Value&)>>> messageHandlers;
@@ -54,6 +57,7 @@ public:
 
 	// Utility
 	void sendJsonMessage(ClientConnection connection, const Json::Value& body);
+	void broadcast(const Json::Value& body);
 
 	// Getter
 	int getNumConnections();

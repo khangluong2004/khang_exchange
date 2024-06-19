@@ -2,7 +2,12 @@
 
 void myServer::onOpen(ClientConnection connection) {
 	std::cout << "Open connection" << std::endl;
-	allConnections.push_back(connection);
+	// Scoped to free the lock asap
+	{
+		// Lock the list
+		std::lock_guard<std::mutex> lock(connectionListMutex);
+		allConnections.push_back(connection);
+	}
 
 	// Call on the handler on the connection
 	for (auto& handler : this->openHandlers) {
@@ -12,30 +17,36 @@ void myServer::onOpen(ClientConnection connection) {
 
 void myServer::onClose(ClientConnection connection) {
 	std::cout << "Close connection" << std::endl;
-	// Promote the connection from weak pointer to shared pointer for comparison
-	auto connectionVal = connection.lock();
-	// Earse-remove idiom
-	// "Remove" all expired and the correct connection
-	// Unlike erase, remove if move the values to the end of the vector,
-	// and change the end iterator
-	auto newEnd = std::remove_if(allConnections.begin(), allConnections.end(),
-		[&connectionVal](const ClientConnection& element) {
-			// Remove expired weak pointer
-			if (element.expired()) {
-				return true;
+	// Scoped to free the lock asap
+	{
+		// Lock the list
+		std::lock_guard<std::mutex> lock(connectionListMutex);
+
+		// Promote the connection from weak pointer to shared pointer for comparison
+		auto connectionVal = connection.lock();
+		// Earse-remove idiom
+		// "Remove" all expired and the correct connection
+		// Unlike erase, remove if move the values to the end of the vector,
+		// and change the end iterator
+		auto newEnd = std::remove_if(allConnections.begin(), allConnections.end(),
+			[&connectionVal](const ClientConnection& element) {
+				// Remove expired weak pointer
+				if (element.expired()) {
+					return true;
+				}
+
+				// Remove the connection that is closed
+				if (element.lock().get() == connectionVal.get()) {
+					return true;
+				}
+
+				return false;
 			}
+		);
 
-			// Remove the connection that is closed
-			if (element.lock().get() == connectionVal.get()) {
-				return true;
-			}
-
-			return false;
-		}
-	);
-
-	// Erase all the element from new end to old end (removed elements)
-	allConnections.erase(newEnd, allConnections.end());
+		// Erase all the element from new end to old end (removed elements)
+		allConnections.erase(newEnd, allConnections.end());
+	}
 
 	// Call all the handlers for close
 	for (auto& handler : this->closeHandlers) {
@@ -93,6 +104,13 @@ std::string myServer::stringify(const Json::Value& root) {
 	return Json::writeString(wbuilder, root);
 }
 
+void myServer::broadcast(const Json::Value& body) {
+	std::lock_guard<std::mutex> lock(connectionListMutex);
+	for (auto connection : this->allConnections) {
+		this->sendJsonMessage(connection, body);
+	}
+}
+
 myServer::myServer() {
 	// Set logging settings
 	m_endpoint.set_error_channels(websocketpp::log::elevel::all);
@@ -126,5 +144,7 @@ void myServer::run(int port) {
 }
 
 int myServer::getNumConnections() {
+	// Lock the list
+	std::lock_guard<std::mutex> lock(connectionListMutex);
 	return this->allConnections.size();
 }
