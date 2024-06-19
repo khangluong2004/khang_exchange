@@ -2,7 +2,7 @@
 //
 
 #include "khang_exchange.hpp"
-#include "myServer.hpp"
+#include "myServer/myServer.hpp"
 
 int main()
 {

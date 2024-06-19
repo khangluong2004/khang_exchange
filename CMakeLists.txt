@@ -29,7 +29,7 @@ find_package(jsoncpp REQUIRED)
 find_package(asio REQUIRED)
 
 # Add source to this project's executable.
-add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.hpp" "myServer.hpp" "myServer.cpp")
+add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.hpp" "myServer/myServer.hpp" "myServer/myServer.cpp")
 target_link_libraries(khang_exchange PRIVATE fmt::fmt)
 target_link_libraries(khang_exchange PRIVATE websocketpp::websocketpp)
 target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)
