@@ -10,7 +10,7 @@
 	
 	d. Update myServer to include the IO-thread + Consider event driven: Done
 	
-	e. Test basic logger with IO-thread: TODO
+	e. Test basic logger with IO-thread: Done
 	
 	f. Set up thread-pool (maybe later): TODO
 2. Add send/ receive orders features
@@ -19,6 +19,13 @@
 5. Host on Oracle servers
 6. Add display features 
 7. Add bots to stimulate market
+
+## Run the server
+Guides for Visual Studio 2022 (with vcpkg)
+
+1. Click "Generate" for CMake
+2. Choose "khang_exchange.cpp" as target, then click run (auto build)
+
 
 ## References:
 Basic websocket tutorial: https://github.com/club-plus-plus/websocket-server-workshop/blob/master/Part4.md

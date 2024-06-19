@@ -9,8 +9,8 @@
 int main()
 {
 	// Initialize key variables
-	// Main event loop
-	asio::io_service mainEventLoop;
+	// Create a thread pool
+	asio::thread_pool pool;
 
 	// Logger
 	textLogger textLogger(std::string("requests.txt"));
@@ -22,8 +22,8 @@ int main()
 	// Those io operations will use the mainEventLoop to avoid blocking
 	// the networking thread
 	server.addOpenHandler(
-		[&mainEventLoop, &server](ClientConnection connection) {
-			mainEventLoop.post(
+		[&pool, &server](ClientConnection connection) {
+			asio::post(pool, 
 				[&server]() {
 					std::cout << "Opened connection. Total connections: " << server.getNumConnections() << std::endl;
 				}
@@ -32,8 +32,8 @@ int main()
 	);
 
 	server.addCloseHandler(
-		[&mainEventLoop, &server](ClientConnection connection) {
-			mainEventLoop.post(
+		[&pool, &server](ClientConnection connection) {
+			asio::post(pool, 
 				[&server]() {
 					std::cout << "Closed connection. Total connections: " << server.getNumConnections() << std::endl;
 				}
@@ -43,9 +43,9 @@ int main()
 
 	// Add echo message handlers
 	server.addMessageHandler("echo",
-		[&mainEventLoop, &server](ClientConnection connection, const Json::Value& messageObj) {
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
 			// Echo back the value for now
-			mainEventLoop.post(
+			asio::post(pool,
 				[&server, connection, messageObj]() {
 					server.sendJsonMessage(connection, messageObj);
 				}
@@ -64,15 +64,14 @@ int main()
 	// Add logger message handlers
 	// The logger process is run on the mainEventLoop thread
 	server.addMessageHandler("logger",
-		[&mainEventLoop, &myLogger](ClientConnection connection, const Json::Value& messageObj) {
-			mainEventLoop.post(
+		[&pool, &myLogger](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool, 
 				[&myLogger, messageObj]() {
 					myLogger.loggingInfo(messageObj);
 				}
 			);
 		}
 	);
-
 
 	// Start networking thread
 	auto runServerFunc = [&server] {
@@ -88,9 +87,12 @@ int main()
 	};
 	std::thread networkThread(runServerFunc);
 
-	// Keep the main event loop runnning on the main thread
-	asio::io_service::work work(mainEventLoop);
-	mainEventLoop.run();
+	// Wait until all tasks are completed
+	// Use the networkThread to make sure all threads are kept alive until the network thread dies
+	networkThread.join();
+
+	// Other threads in the thread pools
+	pool.join();
 
 	return 0;
 }
