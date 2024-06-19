@@ -12,7 +12,10 @@
 	
 	e. Test basic logger with IO-thread: Done
 	
-	f. Set up thread-pool (maybe later): TODO
+	f. Set up basic single-threaded event loop on main thread with asio::io_service: Done 
+	
+	g. Switch to thread-pool: Done
+
 2. Add send/ receive orders features
 3. Add matching orders feature
 4. Add logger: Add buffer to boost performance
