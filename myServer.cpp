@@ -3,19 +3,23 @@
 void myServer::onOpen(ClientConnection connection) {
 	std::cout << "Open connection" << std::endl;
 	allConnections.push_back(connection);
+
+	// Call on the handler on the connection
+	for (auto& handler : this->openHandlers) {
+		handler(connection);
+	}
 }
 
 void myServer::onClose(ClientConnection connection) {
 	std::cout << "Close connection" << std::endl;
-
 	// Promote the connection from weak pointer to shared pointer for comparison
 	auto connectionVal = connection.lock();
 	// Earse-remove idiom
 	// "Remove" all expired and the correct connection
 	// Unlike erase, remove if move the values to the end of the vector,
 	// and change the end iterator
-	auto newEnd = std::remove_if(allConnections.begin(), allConnections.end(), 
-		[&connectionVal](const ClientConnection& element){
+	auto newEnd = std::remove_if(allConnections.begin(), allConnections.end(),
+		[&connectionVal](const ClientConnection& element) {
 			// Remove expired weak pointer
 			if (element.expired()) {
 				return true;
@@ -32,6 +36,11 @@ void myServer::onClose(ClientConnection connection) {
 
 	// Erase all the element from new end to old end (removed elements)
 	allConnections.erase(newEnd, allConnections.end());
+
+	// Call all the handlers for close
+	for (auto& handler : this->closeHandlers) {
+		handler(connection);
+	}
 }
 
 void myServer::onMessage(ClientConnection connection, message_ptr msg) {
@@ -39,26 +48,24 @@ void myServer::onMessage(ClientConnection connection, message_ptr msg) {
 	std::cout << "Opcode: " << msg->get_opcode() << std::endl;
 	std::cout << "On Hdl channel: " << connection.lock().get() << std::endl;
 
-	// Check for special command to stop the server
-	/*if (msg->get_payload() == "stop-listening") {
-		m_endpoint.stop_listening();
-		return;
-	}*/
-
 	// Process payload in json
-
 	Json::Value messageObj = this->parseJson(msg->get_payload());
-	for (auto& key : messageObj.getMemberNames()) {
-		std::cout << "\t" << key << ": " << messageObj[key].asString() << std::endl;
+	// Check null
+	if (messageObj.isNull()) {
+		return;
 	}
 
-	// Echo back the value for now
-	try {
-		m_endpoint.send(connection, msg->get_payload(), msg->get_opcode());
+	// Check contains the message type fields
+	if (!messageObj.isMember("messageType")) {
+		return;
 	}
-	catch (websocketpp::exception const& e) {
-		std::cout << "Echo failed because: "
-			<< e.what() << std::endl;
+
+	// Process the message
+	std::string messageType = messageObj["messageType"].asString();
+	if (this->messageHandlers.count(messageType) == 1) {
+		for (auto& handler : this->messageHandlers[messageType]) {
+			handler(connection, messageObj);
+		}
 	}
 }
 
@@ -116,4 +123,8 @@ void myServer::run(int port) {
 	// + messages for existing connections;
 	// Asynchronous asio
 	m_endpoint.run();
+}
+
+int myServer::getNumConnections() {
+	return this->allConnections.size();
 }

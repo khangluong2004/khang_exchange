@@ -9,10 +9,46 @@ int main()
 	// Initialize key variables
 	// Main event loop
 	asio::io_service mainEventLoop;
+
 	// WebSocketServer
 	myServer server;
+	// Initialize handlers to server
+	// Those io operations will use the mainEventLoop to avoid blocking
+	// the networking thread
+	server.addOpenHandler(
+		[&mainEventLoop, &server](ClientConnection connection) {
+			mainEventLoop.post(
+				[&server]() {
+					std::cout << "Opened connection. Total connections: " << server.getNumConnections() << std::endl;
+				}
+			);
+		}
+	);
+
+	server.addCloseHandler(
+		[&mainEventLoop, &server](ClientConnection connection) {
+			mainEventLoop.post(
+				[&server]() {
+					std::cout << "Closed connection. Total connections: " << server.getNumConnections() << std::endl;
+				}
+			);
+		}
+	);
+
+	// Add echo message handlers
+	server.addMessageHandler("echo",
+		[&mainEventLoop, &server](ClientConnection connection, const Json::Value& messageObj) {
+			// Echo back the value for now
+			mainEventLoop.post(
+				[&server, connection, messageObj]() {
+					server.sendJsonMessage(connection, messageObj);
+				}
+			);
+		}
+	);
 
 
+	// Start networking thread
 	auto runServerFunc = [&server] {
 		try {
 			server.run();
@@ -24,8 +60,6 @@ int main()
 			std::cout << "other exception" << std::endl;
 		}
 	};
-
-	// Start networking thread
 	std::thread networkThread(runServerFunc);
 
 	// Keep the main event loop runnning on the main thread

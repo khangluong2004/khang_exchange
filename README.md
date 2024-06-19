@@ -3,17 +3,25 @@
 ## Targets:
 1. Set up Websocket echo server: Done
 	a. Add json parser: Done
+	
 	b. Handle multiple connections: Done
+	
 	c. Handle basic thread + IO-thread: Done
-	d. Update myServer to include the IO-thread + Consider event driven: TODO
+	
+	d. Update myServer to include the IO-thread + Consider event driven: Done
+	
 	e. Test basic logger with IO-thread: TODO
-	f. Set up thread-pool: TODO
+	
+	f. Set up thread-pool (maybe later): TODO
 2. Add send/ receive orders features
 3. Add matching orders feature
 4. Add logger
 5. Host on Oracle servers
 6. Add display features 
 7. Add bots to stimulate market
+
+## References:
+Basic websocket tutorial: https://github.com/club-plus-plus/websocket-server-workshop/blob/master/Part4.md
 
 ## Notes:
 Personal notes on random topics read while building projects.
