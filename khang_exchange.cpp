@@ -3,12 +3,18 @@
 
 #include "khang_exchange.hpp"
 #include "myServer/myServer.hpp"
+#include "logger/logger.hpp"
+#include "logger/textLogger.hpp"
 
 int main()
 {
 	// Initialize key variables
 	// Main event loop
 	asio::io_service mainEventLoop;
+
+	// Logger
+	textLogger textLogger(std::string("requests.txt"));
+	logger& myLogger = textLogger;
 
 	// WebSocketServer
 	myServer server;
@@ -52,6 +58,18 @@ int main()
 	server.addMessageHandler("broadcast",
 		[&server](ClientConnection connection, const Json::Value& messageObj) {
 			server.broadcast(messageObj);
+		}
+	);
+
+	// Add logger message handlers
+	// The logger process is run on the mainEventLoop thread
+	server.addMessageHandler("logger",
+		[&mainEventLoop, &myLogger](ClientConnection connection, const Json::Value& messageObj) {
+			mainEventLoop.post(
+				[&myLogger, messageObj]() {
+					myLogger.loggingInfo(messageObj);
+				}
+			);
 		}
 	);
 

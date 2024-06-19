@@ -15,7 +15,7 @@
 	f. Set up thread-pool (maybe later): TODO
 2. Add send/ receive orders features
 3. Add matching orders feature
-4. Add logger
+4. Add logger: Add buffer to boost performance
 5. Host on Oracle servers
 6. Add display features 
 7. Add bots to stimulate market
