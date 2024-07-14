@@ -16,7 +16,17 @@
 	
 	g. Switch to thread-pool: Done
 
-2. Add send/ receive orders features
+2. Add send/ receive orders features:
+
+User account: {userId: string, tickersAmount: map<string, int>}
+
+Order structure: {userId: string, tickers: string, price: int, amount: int, sell: boolean, submitTime: time_t}
+
+Order book (2 side: Buy - Sell): For each ticker, maintains an ordered set by price and 
+time of submission for O(log n) access (can further optimized by grouping the set by prices
+but still O(log n) worst case regardless).
+
+
 3. Add matching orders feature
 4. Add logger: Add buffer to boost performance
 5. Host on Oracle servers

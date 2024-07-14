@@ -31,7 +31,7 @@ find_package(asio REQUIRED)
 # Add source to this project's executable.
 add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.hpp" 
 	"myServer/myServer.hpp" "myServer/myServer.cpp" 
-	"logger/logger.hpp" "logger/textLogger.hpp" "logger/textLogger.cpp")
+	"logger/logger.hpp" "logger/textLogger.hpp" "logger/textLogger.cpp" "orders/order.cpp")
 target_link_libraries(khang_exchange PRIVATE fmt::fmt)
 target_link_libraries(khang_exchange PRIVATE websocketpp::websocketpp)
 target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)
