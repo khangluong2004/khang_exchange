@@ -1,11 +1,24 @@
 #include "order.hpp"
-#include <string>
 
-order::order(order& const oldOrder) {
+order::order(const order& oldOrder) {
 	this->price = oldOrder.price;
 	this->amount = oldOrder.amount;
 	this->sell = oldOrder.sell;
 	this->submitTime = oldOrder.submitTime;
 	this->ticker = oldOrder.ticker;
 	this->userId = oldOrder.userId;
+}
+
+order::order(const Json::Value& messageObj) {
+	this->price = messageObj["price"].asDouble();
+	this->amount = messageObj["amount"].asInt();
+	this->sell = messageObj["sell"].asBool();
+	this->submitTime = time(NULL);
+	this->ticker = messageObj["ticker"].asString();
+	this->userId = messageObj["userId"].asString();
+}
+
+void order::printOrder() const {
+	std::cout << "From " << userId << " for " << ticker << " sell: " << this->sell << std::endl;
+	std::cout << "Order {" << "price: " << this->price << ", amount: " << this->amount << ", time: " << this->submitTime << std::endl;
 }

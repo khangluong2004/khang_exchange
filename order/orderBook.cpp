@@ -1,26 +1,31 @@
 #include "orderBook.hpp"
 
 std::vector<order> orderBook::addOrder(order newOrder) {
-	vector<order> result;
-	std::set<order>& side = sellSide;
-	std::set<order>& holdSide = buySide;
-
-	if (!newOrder.sell) {
-		side = buySide;
-		holdSide = sellSide;
+	if (newOrder.sell) {
+		return this->addOrderHelper<buy_set, sell_set>(newOrder, this->buySide, this->sellSide);
 	}
+	else {
+		return this->addOrderHelper<sell_set, buy_set>(newOrder, this->sellSide, this->buySide);
+	}
+}
 
-	// Iterate through the sell side
-	auto startIter = side.begin();
-	auto endIter = side.begin();
+template<class T, class U>
+std::vector<order> orderBook::addOrderHelper(order newOrder, T& oppositeSide, U& holdSide) {
+	std::vector<order> result;
+	// Lock the resources while updating it. TODO: Split into 2 locks for each side
+	std::lock_guard<std::mutex> lock(this->bookSidesMutex);
 
-	for (auto it = side.begin(); it != side.end(); it++) {
+	// Iterate through the oppositeSide
+	auto startIter = oppositeSide.begin();
+	auto endIter = oppositeSide.begin();
+
+	for (auto it = oppositeSide.begin(); it != oppositeSide.end(); it++) {
 		if (newOrder.amount == 0) {
 			endIter = it;
 			break;
 		}
 
-		if (it->price > newOrder.price) {
+		if ((!newOrder.sell && it->price > newOrder.price) || (newOrder.sell && it->price < newOrder.price)) {
 			endIter = it;
 			break;
 		}
@@ -33,6 +38,7 @@ std::vector<order> orderBook::addOrder(order newOrder) {
 
 			newOrder.amount = 0;
 			result.push_back(removedOrder);
+			break;
 		}
 		else {
 			newOrder.amount -= it->amount;
@@ -40,13 +46,27 @@ std::vector<order> orderBook::addOrder(order newOrder) {
 		}
 	}
 
-	if (endIter != side.begin()) {
-		side.erase(startIter, endIter);
+	if (endIter != oppositeSide.begin()) {
+		oppositeSide.erase(startIter, endIter);
 	}
 
-	if (newOrder->amount > 0) {
-		holdSide.push_back(newOrder);
+	if (newOrder.amount > 0) {
+		holdSide.insert(newOrder);
 	}
+
+	std::cout << holdSide.size() << std::endl;
 
 	return result;
+}
+
+void orderBook::displayOrder() {
+	std::cout << "Buy side" << this->buySide.size() << std::endl;
+	for (order order : this->buySide) {
+		order.printOrder();
+	}
+
+	std::cout << "Sell side" << this->sellSide.size() << std::endl;
+	for (order order : this->sellSide) {
+		order.printOrder();
+	}
 }

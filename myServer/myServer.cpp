@@ -148,3 +148,11 @@ int myServer::getNumConnections() {
 	std::lock_guard<std::mutex> lock(connectionListMutex);
 	return this->allConnections.size();
 }
+
+void myServer::addOrder(const order& newOrder) {
+	this->book.addOrder(newOrder);
+}
+
+void myServer::displayOrder() {
+	this->book.displayOrder();
+}

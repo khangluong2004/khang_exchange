@@ -16,7 +16,7 @@
 	
 	g. Switch to thread-pool: Done
 
-2. Add send/ receive orders features:
+2. Add send/ receive orders features: Done
 
 User account: {userId: string, tickersAmount: map<string, int>}
 
@@ -27,7 +27,8 @@ time of submission for O(log n) access (can further optimized by grouping the se
 but still O(log n) worst case regardless).
 
 
-3. Add matching orders feature
+3. Add matching orders feature: Done (for a single ticker for now)
+
 4. Add logger: Add buffer to boost performance
 5. Host on Oracle servers
 6. Add display features 

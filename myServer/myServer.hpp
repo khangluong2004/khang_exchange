@@ -17,6 +17,9 @@
 #include <vector>
 #include <map>
 
+#include "../order/order.hpp"
+#include "../order/orderBook.hpp"
+
 /// <summary>
 /// Websocket:
 /// 1. Endpoint: Creates and launches connection with its settings
@@ -40,10 +43,14 @@ private:
 
 	// Storing handlers for event-driven pattern
 	// Register handlers cannot have race conditions, since the async listening only starts after that,
-	// Running handlers is on the io main thread mainEventLoop
+	// Running handlers is on the thread pool
 	std::vector<std::function<void(ClientConnection)>> openHandlers;
 	std::vector<std::function<void(ClientConnection)>> closeHandlers;
 	std::map<std::string, std::vector<std::function<void(ClientConnection, const Json::Value&)>>> messageHandlers;
+
+	// Set up the order book 
+	orderBook book;
+
 protected:
 	void onOpen(ClientConnection connection);
 	void onClose(ClientConnection connection);
@@ -77,4 +84,9 @@ public:
 	void addMessageHandler(const std::string& messageType, CallbackT callback) {
 		this->messageHandlers[messageType].push_back(callback);
 	}
+
+	// Add order
+	void addOrder(const order& newOrder);
+
+	void displayOrder();
 };

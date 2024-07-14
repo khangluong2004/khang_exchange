@@ -5,6 +5,7 @@
 #include "myServer/myServer.hpp"
 #include "logger/logger.hpp"
 #include "logger/textLogger.hpp"
+#include "order/order.hpp"
 
 int main()
 {
@@ -48,6 +49,29 @@ int main()
 			asio::post(pool,
 				[&server, connection, messageObj]() {
 					server.sendJsonMessage(connection, messageObj);
+				}
+			);
+		}
+	);
+
+	// Add order message handlers
+	server.addMessageHandler("order",
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool,
+				[&server, connection, messageObj]() {
+					order newOrder(messageObj);
+					server.addOrder(newOrder);
+				}
+			);
+		}
+	);
+
+	// Add display order message handlers
+	server.addMessageHandler("displayOrder",
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool,
+				[&server, connection, messageObj]() {
+					server.displayOrder();
 				}
 			);
 		}
