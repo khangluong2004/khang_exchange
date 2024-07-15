@@ -5,6 +5,7 @@
 #include <set>
 #include <vector>
 #include <mutex>
+#include <unordered_map>
 
 // Construct the order book for 1 single sticker. 
 // Mapping order to the correct ticker's book is the responsibility of the orderMediator (TODO)
@@ -27,21 +28,31 @@ struct orderComparator {
 
 typedef std::set<order, orderComparator<1>> sell_set;
 typedef std::set<order, orderComparator<-1>> buy_set;
+typedef std::unordered_map<std::string, sell_set::iterator> sell_map;
+typedef std::unordered_map<std::string, buy_set::iterator> buy_map;
 class orderBook {
-public:
-	// TODO: Move these to private after done
-	std::mutex bookSidesMutex;
+private:
+	std::mutex buySideMutex;
+	std::mutex sellSideMutex;
 	sell_set sellSide;
 	buy_set buySide;
 
-
-
+	std::mutex sellSideIterMapMutex;
+	std::mutex buySideIterMapMutex;
+	sell_map sellSideIterMap;
+	buy_map buySideIterMap;
+public:
 	// Return the list of matched orders 
-	// TODO: Check this
 	std::vector<order> addOrder(order newOrder);
 
-	template<class T, class U>
-	std::vector<order> addOrderHelper(order newOrder, T& oppositeSide, U& holdSide);
+	template<class T, class TMap, class U, class UMap>
+	std::vector<order> addOrderHelper(order newOrder,
+		T& oppositeSide, std::mutex& oppositeSideMutex,
+		TMap& oppositeMap, std::mutex& oppositeMapMutex,
+		U& holdSide, std::mutex& holdSideMutex,
+		UMap& holdMap, std::mutex& holdMapMutex);
+
+	bool removeOrder(std::string& orderId);
 	
 	void displayOrder();
 };

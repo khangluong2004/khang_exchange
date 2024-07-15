@@ -20,7 +20,7 @@
 
 User account: {userId: string, tickersAmount: map<string, int>}
 
-Order structure: {userId: string, tickers: string, price: int, amount: int, sell: boolean, submitTime: time_t}
+Order structure: {userId: string, orderId: string, tickers: string, price: int, amount: int, sell: boolean, submitTime: time_t}
 
 Order book (2 side: Buy - Sell): For each ticker, maintains an ordered set by price and 
 time of submission for O(log n) access (can further optimized by grouping the set by prices
@@ -29,10 +29,16 @@ but still O(log n) worst case regardless).
 
 3. Add matching orders feature: Done (for a single ticker for now)
 
-4. Add logger: Add buffer to boost performance
-5. Host on Oracle servers
-6. Add display features 
-7. Add bots to stimulate market
+4. Add efficient removal of orders: O(1) armortized with cached location of order in
+the balanced tree.
+
+5. Add logger: Add buffer to boost performance
+
+6. Host on Oracle servers
+
+7. Add display features 
+
+8. Add bots to stimulate market
 
 ## Run the server
 Guides for Visual Studio 2022 (with vcpkg)

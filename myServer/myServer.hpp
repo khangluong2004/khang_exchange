@@ -87,6 +87,7 @@ public:
 
 	// Add order
 	void addOrder(const order& newOrder);
+	void removeOrder(std::string& orderId);
 
 	void displayOrder();
 };

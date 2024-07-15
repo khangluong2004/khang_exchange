@@ -77,6 +77,18 @@ int main()
 		}
 	);
 
+	// Add display order message handlers
+	server.addMessageHandler("removeOrder",
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool,
+				[&server, connection, messageObj]() {
+					std::string orderId = messageObj["orderId"].asString();
+					server.removeOrder(orderId);
+				}
+			);
+		}
+	);
+
 	// Add broadcast message handlers
 	// Broadcast is run on the network thread
 	server.addMessageHandler("broadcast",

@@ -5,6 +5,7 @@ order::order(const order& oldOrder) {
 	this->amount = oldOrder.amount;
 	this->sell = oldOrder.sell;
 	this->submitTime = oldOrder.submitTime;
+	this->orderId = oldOrder.orderId;
 	this->ticker = oldOrder.ticker;
 	this->userId = oldOrder.userId;
 }
@@ -16,9 +17,10 @@ order::order(const Json::Value& messageObj) {
 	this->submitTime = time(NULL);
 	this->ticker = messageObj["ticker"].asString();
 	this->userId = messageObj["userId"].asString();
+	this->orderId = messageObj["orderId"].asString();
 }
 
 void order::printOrder() const {
-	std::cout << "From " << userId << " for " << ticker << " sell: " << this->sell << std::endl;
+	std::cout << this->orderId << ": From " << userId << " for " << ticker << " sell: " << this->sell << std::endl;
 	std::cout << "Order {" << "price: " << this->price << ", amount: " << this->amount << ", time: " << this->submitTime << std::endl;
 }

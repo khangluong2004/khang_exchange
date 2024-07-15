@@ -9,6 +9,7 @@
 class order {
 public:
 	std::string userId;
+	std::string orderId; // Computed by appending a count to userId: eg: <userId>-<order-count>
 	std::string ticker;
 	mutable int amount;
 	double price;

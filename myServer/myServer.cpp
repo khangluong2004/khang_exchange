@@ -153,6 +153,10 @@ void myServer::addOrder(const order& newOrder) {
 	this->book.addOrder(newOrder);
 }
 
+void myServer::removeOrder(std::string& orderId) {
+	this->book.removeOrder(orderId);
+}
+
 void myServer::displayOrder() {
 	this->book.displayOrder();
 }
