@@ -30,7 +30,7 @@ but still O(log n) worst case regardless).
 3. Add matching orders feature: Done (for a single ticker for now)
 
 4. Add efficient removal of orders: O(1) armortized with cached location of order in
-the balanced tree.
+the balanced tree: Done
 
 5. Add logger: Add buffer to boost performance
 
