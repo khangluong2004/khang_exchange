@@ -32,26 +32,60 @@ but still O(log n) worst case regardless).
 4. Add efficient removal of orders: O(1) armortized with cached location of order in
 the balanced tree: Done
 
-5. Add logger: Add buffer to boost performance
+5. Add logger: Add buffer to boost performance: TBC
 
-6. Host on Oracle servers
+6. Host on Oracle servers: Done (Note below)
 
-7. Add display features 
+7. Add display features: TBC
 
-8. Add bots to stimulate market
+8. Add bots to stimulate market: TBC
 
 ## Run the server
 Guides for Visual Studio 2022 (with vcpkg)
 
 1. Click "Generate" for CMake
 2. Choose "khang_exchange.cpp" as target, then click run (auto build)
+```
+## Build the program on Linux Oracle sever (Ubuntu 24)
+First, access the server with ssh (MUST set the key to read-only 400 mode. For windows, use the scripts below): ssh -i \<private key> ubuntu@\<public ip>
 
-## Build the program on Linux sever
+Scripts for setting chmod 400:
+# Source: https://stackoverflow.com/a/43317244
+$path = ".\aws-ec2-key.pem"
+# Reset to remove explict permissions
+icacls.exe $path /reset
+# Give current user explicit read-permission
+icacls.exe $path /GRANT:R "$($env:USERNAME):(R)"
+# Disable inheritance and remove inherited permissions
+icacls.exe $path /inheritance:r
+```
 
-1. Setup git, g++-13, cmake and vcpkg
+1. Setup git, g++-13, clang, cmake and vcpkg
+
 2. Change the "CMAKE_TOOLCHAIN_FILE" attributes in CMakePresets.json to point it to the cmake file of the vcpkg
-3. Run: cmake --preset=x64-debug (Still running, will continue when completed installing dependencies) 
 
+3. Change the "CMAKE_C_COMPILER": "cl.exe", "CMAKE_CXX_COMPILER": "cl.exe" to "clang"
+
+4. Run: cmake --preset=x64-debug (Still running, will continue when completed installing dependencies)
+
+5. Install the jsoncpp linker library directly through apt (since the vcpkg linking is bugged for some reason):
+```
+sudo apt-get install libjsoncpp-dev
+```
+6. Change the CMakeLists.txt "target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)" to "target_link_libraries(khang_exchange PRIVATE jsoncpp)"
+
+Then, need to open port 8080 to connect.
+## Open port 8080 for Oracle:
+
+1. Click on the INSTANCE VM (Not the public subnet) VNIC/ Virtual Cloud Network
+
+2. Add an Ingress rule on port 8080 for IP/TCP (HTTP) traffic (for Websocket)
+
+3. Run these commands to open the iptables firewall on Linux for incoming traffic:
+```
+sudo iptables -I INPUT -j ACCEPT
+sudo iptables-save -f /etc/iptables/rules.v4
+```
 
 ## References:
 Basic websocket tutorial: https://github.com/club-plus-plus/websocket-server-workshop/blob/master/Part4.md
