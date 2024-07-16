@@ -61,7 +61,7 @@ icacls.exe $path /inheritance:r
 ```
 
 TODO: Make a bash file for all these
-1. Setup git, g++-13, clang, cmake (sudo apt) and vcpkg (git clone the source)
+1. Setup git, g++-13, clang, cmake, pkg-config, ninja-build (sudo apt) and vcpkg (git clone the source)
 
 2. Change the "CMAKE_TOOLCHAIN_FILE" attributes in CMakePresets.json to point it to the cmake file of the vcpkg
 
