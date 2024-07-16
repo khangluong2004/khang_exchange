@@ -46,6 +46,12 @@ Guides for Visual Studio 2022 (with vcpkg)
 1. Click "Generate" for CMake
 2. Choose "khang_exchange.cpp" as target, then click run (auto build)
 
+## Build the program on Linux sever
+
+1. Setup git, g++-13, cmake and vcpkg
+2. Change the "CMAKE_TOOLCHAIN_FILE" attributes in CMakePresets.json to point it to the cmake file of the vcpkg
+3. Run: cmake --preset=x64-debug (Still running, will continue when completed installing dependencies) 
+
 
 ## References:
 Basic websocket tutorial: https://github.com/club-plus-plus/websocket-server-workshop/blob/master/Part4.md

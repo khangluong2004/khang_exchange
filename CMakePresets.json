@@ -11,11 +11,6 @@
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_TOOLCHAIN_FILE": "D:/AA_Apps/VisualStudio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
       }
     },
     {
