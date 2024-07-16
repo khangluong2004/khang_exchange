@@ -67,15 +67,13 @@ TODO: Make a bash file for all these
 
 3. Change the "CMAKE_C_COMPILER": "cl.exe", "CMAKE_CXX_COMPILER": "cl.exe" to "clang"
 
-4. Run: cmake --preset=x64-debug (Still running, will continue when completed installing dependencies)
-
-5. Install the jsoncpp linker library directly through apt (since the vcpkg linking is bugged for some reason):
+4. Install the jsoncpp linker library directly through apt (since the vcpkg linking is bugged for some reason):
 ```
 sudo apt-get install libjsoncpp-dev
 ```
-6. Change the CMakeLists.txt "target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)" to "target_link_libraries(khang_exchange PRIVATE jsoncpp)"
+5. Change the CMakeLists.txt "target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)" to "target_link_libraries(khang_exchange PRIVATE jsoncpp)"
 
-7. Navigate to the the directory contains CMakeLists.txt. 
+6. Navigate to the the directory contains CMakeLists.txt. 
 Run those commands to build the project:
 ```
 cmake --preset=x64-debug
