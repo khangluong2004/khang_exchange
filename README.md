@@ -45,10 +45,10 @@ Guides for Visual Studio 2022 (with vcpkg)
 
 1. Click "Generate" for CMake
 2. Choose "khang_exchange.cpp" as target, then click run (auto build)
-```
+
 ## Build the program on Linux Oracle sever (Ubuntu 24)
 First, access the server with ssh (MUST set the key to read-only 400 mode. For windows, use the scripts below): ssh -i \<private key> ubuntu@\<public ip>
-
+```
 Scripts for setting chmod 400:
 # Source: https://stackoverflow.com/a/43317244
 $path = ".\aws-ec2-key.pem"
@@ -60,7 +60,8 @@ icacls.exe $path /GRANT:R "$($env:USERNAME):(R)"
 icacls.exe $path /inheritance:r
 ```
 
-1. Setup git, g++-13, clang, cmake and vcpkg
+TODO: Make a bash file for all these
+1. Setup git, g++-13, clang, cmake (sudo apt) and vcpkg (git clone the source)
 
 2. Change the "CMAKE_TOOLCHAIN_FILE" attributes in CMakePresets.json to point it to the cmake file of the vcpkg
 
@@ -74,6 +75,14 @@ sudo apt-get install libjsoncpp-dev
 ```
 6. Change the CMakeLists.txt "target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)" to "target_link_libraries(khang_exchange PRIVATE jsoncpp)"
 
+7. Navigate to the the directory contains CMakeLists.txt. 
+Run those commands to build the project:
+```
+cmake --preset=x64-debug
+cmake --build out/build/x64-debug
+```
+The executable will be in the folder out/build/x64-debug as "khang_exchange"
+
 Then, need to open port 8080 to connect.
 ## Open port 8080 for Oracle:
 
@@ -86,6 +95,8 @@ Then, need to open port 8080 to connect.
 sudo iptables -I INPUT -j ACCEPT
 sudo iptables-save -f /etc/iptables/rules.v4
 ```
+
+Now, use Postman to connect and send relevant message: "ws://\<public server ip>:8080"
 
 ## References:
 Basic websocket tutorial: https://github.com/club-plus-plus/websocket-server-workshop/blob/master/Part4.md
