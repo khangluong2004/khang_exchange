@@ -90,6 +90,16 @@ void myServer::sendJsonMessage(ClientConnection connection, const Json::Value& b
 	}
 }
 
+void myServer::sendMessage(ClientConnection connection, std::string message) {
+	try {
+		m_endpoint.send(connection, message, websocketpp::frame::opcode::text);
+	}
+	catch (websocketpp::exception const& e) {
+		std::cout << "Send message failed because: "
+			<< e.what() << std::endl;
+	}
+}
+
 Json::Value myServer::parseJson(const std::string& json) {
 	Json::Value root;
 	Json::Reader reader;
@@ -157,6 +167,14 @@ void myServer::removeOrder(std::string& orderId) {
 	this->book.removeOrder(orderId);
 }
 
-void myServer::displayOrder() {
+void myServer::displayOrder() const {
 	this->book.displayOrder();
 }
+
+std::string myServer::stringifyOrder() const {
+	return this->book.stringify();
+}
+
+std::string myServer::stringifySummary() const {
+	return this->book.stringifySummary();
+};

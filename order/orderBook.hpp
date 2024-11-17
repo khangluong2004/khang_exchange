@@ -54,5 +54,9 @@ public:
 
 	bool removeOrder(std::string& orderId);
 	
-	void displayOrder();
+	void displayOrder() const;
+
+	std::string stringify() const;
+
+	std::string stringifySummary() const;
 };

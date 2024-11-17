@@ -11,7 +11,7 @@ order::order(const order& oldOrder) {
 }
 
 order::order(const Json::Value& messageObj) {
-	this->price = messageObj["price"].asDouble();
+	this->price = messageObj["price"].asInt();
 	this->amount = messageObj["amount"].asInt();
 	this->sell = messageObj["sell"].asBool();
 	this->submitTime = time(NULL);
@@ -21,6 +21,16 @@ order::order(const Json::Value& messageObj) {
 }
 
 void order::printOrder() const {
-	std::cout << this->orderId << ": From " << userId << " for " << ticker << " sell: " << this->sell << std::endl;
-	std::cout << "Order {" << "price: " << this->price << ", amount: " << this->amount << ", time: " << this->submitTime << std::endl;
+	std::cout << this->stringify() << std::endl;
+}
+
+std::string order::stringify() const {
+	std::string jsonStringify = "{ \"from\": \"" + this->userId + "\"" +
+		", \"orderId\": \"" + this->orderId + "\"" +
+		", \"ticker\": \"" + this->ticker + "\"" +
+		", \"price\": " + std::to_string(this->price) + 
+		", \"amount\": " + std::to_string(this->amount) + 
+		", \"time\": " + std::to_string(this->submitTime) +
+		", \"isSell\": " + (this->sell ? "true": "false") + "}";
+	return (jsonStringify);
 }

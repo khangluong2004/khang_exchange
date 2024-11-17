@@ -12,11 +12,12 @@ public:
 	std::string orderId; // Computed by appending a count to userId: eg: <userId>-<order-count>
 	std::string ticker;
 	mutable int amount;
-	double price;
+	int price; // in cents
 	bool sell;
 	time_t submitTime;
 
 	order(const order& oldOrder);
 	order(const Json::Value& messageObj);
 	void printOrder() const;
+	std::string stringify() const;
 };

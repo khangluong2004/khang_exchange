@@ -119,14 +119,75 @@ bool orderBook::removeOrder(std::string& orderId) {
 	}
 }
 
-void orderBook::displayOrder() {
-	std::cout << "Buy side" << this->buySide.size() << std::endl;
-	for (order order : this->buySide) {
-		order.printOrder();
+void orderBook::displayOrder() const {
+	std::cout << this->stringify() << std::endl;
+}
+
+std::string orderBook::stringify() const {
+	std::string jsonString = "{\"buySide\": [";
+	int size = this->buySide.size();
+	int count = 0;
+	for (const order& order : this->buySide) {
+		jsonString += order.stringify();
+		count += 1;
+		if (count < size) {
+			jsonString += ", ";
+		}
 	}
 
-	std::cout << "Sell side" << this->sellSide.size() << std::endl;
-	for (order order : this->sellSide) {
-		order.printOrder();
+	jsonString += "], \"sellSide\": [";
+	
+	size = this->sellSide.size();
+	count = 0;
+	for (const order& order : this->sellSide) {
+		jsonString += order.stringify();
+		count += 1;
+		if (count < size) {
+			jsonString += ", ";
+		}
 	}
+
+	jsonString += "]}";
+
+	return jsonString;
 }
+
+std::string orderBook::stringifySummary() const {
+	std::unordered_map<int, int> countPrice;
+	for (const order& order : this->buySide) {
+		countPrice[order.price] += 1;
+	}
+
+	// Store price in even index, count in odd index
+	std::string jsonString = "{\"buySide\": [";
+	for (auto& pair : countPrice) {
+		jsonString += std::to_string(pair.first) + ",";
+		jsonString += std::to_string(pair.second) + ",";
+	}
+
+	if (countPrice.size() != 0) {
+		// Remove last comma
+		jsonString.pop_back();
+	}
+
+	jsonString += "], \"sellSide\": [";
+	countPrice.clear();
+
+	for (const order& order : this->sellSide) {
+		countPrice[order.price] += 1;
+	}
+
+	for (auto& pair : countPrice) {
+		jsonString += std::to_string(pair.first) + ",";
+		jsonString += std::to_string(pair.second) + ",";
+	}
+
+	if (countPrice.size() != 0) {
+		// Remove last comma
+		jsonString.pop_back();
+	}
+
+	jsonString += "]}";
+
+	return jsonString;
+};

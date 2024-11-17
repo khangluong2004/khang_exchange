@@ -64,6 +64,7 @@ public:
 
 	// Utility
 	void sendJsonMessage(ClientConnection connection, const Json::Value& body);
+	void sendMessage(ClientConnection connection, std::string message);
 	void broadcast(const Json::Value& body);
 
 	// Getter
@@ -89,5 +90,7 @@ public:
 	void addOrder(const order& newOrder);
 	void removeOrder(std::string& orderId);
 
-	void displayOrder();
+	void displayOrder() const;
+	std::string stringifyOrder() const;
+	std::string stringifySummary() const;
 };

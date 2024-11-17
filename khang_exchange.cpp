@@ -20,8 +20,7 @@ int main()
 	// WebSocketServer
 	myServer server;
 	// Initialize handlers to server
-	// Those io operations will use the mainEventLoop to avoid blocking
-	// the networking thread
+	// Those io operations will use the thread pool
 	server.addOpenHandler(
 		[&pool, &server](ClientConnection connection) {
 			asio::post(pool, 
@@ -77,7 +76,29 @@ int main()
 		}
 	);
 
-	// Add display order message handlers
+	// Add retrieve order message handlers
+	server.addMessageHandler("retrieveOrder",
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool,
+			[&server, connection, messageObj]() {
+				server.sendMessage(connection, server.stringifyOrder());
+			}
+			);
+		}
+	);
+
+	// Add retrieve order summary message handlers
+	server.addMessageHandler("retrieveSummary",
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool,
+			[&server, connection, messageObj]() {
+				server.sendMessage(connection, server.stringifySummary());
+			}
+			);
+		}
+	);
+
+	// Add remove order message handlers
 	server.addMessageHandler("removeOrder",
 		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
 			asio::post(pool,
