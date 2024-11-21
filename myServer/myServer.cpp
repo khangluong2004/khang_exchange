@@ -121,7 +121,7 @@ void myServer::broadcast(const Json::Value& body) {
 	}
 }
 
-myServer::myServer() {
+myServer::myServer():book(userStorage) {
 	// Set logging settings
 	m_endpoint.set_error_channels(websocketpp::log::elevel::all);
 	m_endpoint.set_access_channels(websocketpp::log::alevel::all ^
@@ -157,6 +157,10 @@ int myServer::getNumConnections() {
 	// Lock the list
 	std::lock_guard<std::mutex> lock(connectionListMutex);
 	return this->allConnections.size();
+}
+
+int myServer::getBalance(std::string userId) {
+	return this->userStorage.getBalance(userId);
 }
 
 void myServer::addOrder(const order& newOrder) {

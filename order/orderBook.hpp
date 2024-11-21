@@ -1,5 +1,6 @@
 #pragma once
 #include "order.hpp"
+#include "../userBalances/userBalances.hpp"
 #include <iostream>
 #include <ctime>
 #include <set>
@@ -41,7 +42,10 @@ private:
 	std::mutex buySideIterMapMutex;
 	sell_map sellSideIterMap;
 	buy_map buySideIterMap;
+
+	userBalances& userStorage;
 public:
+	orderBook(userBalances& userStorage):userStorage(userStorage){};
 	// Return the list of matched orders 
 	std::vector<order> addOrder(order newOrder);
 
@@ -50,7 +54,84 @@ public:
 		T& oppositeSide, std::mutex& oppositeSideMutex,
 		TMap& oppositeMap, std::mutex& oppositeMapMutex,
 		U& holdSide, std::mutex& holdSideMutex,
-		UMap& holdMap, std::mutex& holdMapMutex);
+		UMap& holdMap, std::mutex& holdMapMutex) {
+
+		std::vector<order> result;
+		// Lock the resources while updating it.
+		{
+			std::lock_guard<std::mutex> lock(oppositeSideMutex);
+			std::lock_guard<std::mutex> lockMap(oppositeMapMutex);
+
+			// Iterate through the oppositeSide
+			auto startIter = oppositeSide.begin();
+			auto endIter = oppositeSide.begin();
+
+			for (auto it = oppositeSide.begin(); it != oppositeSide.end(); it++) {
+				if (newOrder.amount == 0) {
+					endIter = it;
+					break;
+				}
+
+				if ((!newOrder.sell && it->price > newOrder.price) || (newOrder.sell && it->price < newOrder.price)) {
+					endIter = it;
+					break;
+				}
+
+				order removedOrder(*it);
+				if (newOrder.amount < it->amount) {
+					removedOrder.amount = newOrder.amount;
+					it->amount -= newOrder.amount;
+					endIter = it;
+
+					newOrder.amount = 0;
+					result.push_back(removedOrder);
+
+					int priceChange = removedOrder.amount * removedOrder.price * (newOrder.sell ? 1 : -1);
+					userStorage.setBalance(newOrder.userId, userStorage.getBalance(newOrder.userId) 
+						+ priceChange);
+					userStorage.setBalance(it->userId, userStorage.getBalance(it->userId)
+						- priceChange);
+
+					break;
+				}
+				else {
+					newOrder.amount -= it->amount;
+					oppositeMap.erase(it->orderId);
+					endIter = std::next(it, 1);
+					result.push_back(removedOrder);
+
+					int priceChange = removedOrder.amount * removedOrder.price * (newOrder.sell ? 1 : -1);
+					userStorage.setBalance(newOrder.userId, userStorage.getBalance(newOrder.userId)
+						+ priceChange);
+					userStorage.setBalance(it->userId, userStorage.getBalance(it->userId)
+						- priceChange);
+
+
+				}
+			}
+
+			if (endIter != oppositeSide.begin()) {
+				oppositeSide.erase(startIter, endIter);
+			}
+		}
+
+		if (newOrder.amount > 0) {
+			std::lock_guard<std::mutex> lock(holdSideMutex);
+			std::lock_guard<std::mutex> lockMap(holdMapMutex);
+
+			auto check = holdSide.insert(newOrder);
+			if (check.second) {
+				holdMap[newOrder.orderId] = check.first;
+			}
+			else {
+				throw std::runtime_error("Cannot insert order " + newOrder.orderId);
+			}
+		}
+
+		std::cout << holdSide.size() << std::endl;
+
+		return result;
+	};
 
 	bool removeOrder(std::string& orderId);
 	

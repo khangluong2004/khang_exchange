@@ -32,7 +32,9 @@ find_package(asio REQUIRED)
 add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.hpp" 
 	"myServer/myServer.hpp" "myServer/myServer.cpp" 
 	"logger/logger.hpp" "logger/textLogger.hpp" "logger/textLogger.cpp" 
-	"order/order.hpp" "order/order.cpp" "order/orderBook.hpp" "order/orderBook.cpp")
+	"order/order.hpp" "order/order.cpp" "order/orderBook.hpp" "order/orderBook.cpp"
+	"userBalances/userBalances.hpp" "userBalances/userBalances.cpp"
+)
 target_link_libraries(khang_exchange PRIVATE fmt::fmt)
 target_link_libraries(khang_exchange PRIVATE websocketpp::websocketpp)
 target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)

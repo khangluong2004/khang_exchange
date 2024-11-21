@@ -130,6 +130,19 @@ int main()
 		}
 	);
 
+	// Add balance getter
+	// Add remove order message handlers
+	server.addMessageHandler("getBalance",
+		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
+			asio::post(pool,
+			[&server, connection, messageObj]() {
+					std::string userId = messageObj["userId"].asString();
+					server.sendMessage(connection, std::to_string(server.getBalance(userId)));
+				}
+			);
+		}
+	);
+
 	// Start networking thread
 	auto runServerFunc = [&server] {
 		try {

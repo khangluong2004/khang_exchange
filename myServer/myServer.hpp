@@ -19,6 +19,7 @@
 
 #include "../order/order.hpp"
 #include "../order/orderBook.hpp"
+#include "../userBalances/userBalances.hpp"
 
 /// <summary>
 /// Websocket:
@@ -48,6 +49,9 @@ private:
 	std::vector<std::function<void(ClientConnection)>> closeHandlers;
 	std::map<std::string, std::vector<std::function<void(ClientConnection, const Json::Value&)>>> messageHandlers;
 
+	// Set up user balance storage
+	userBalances userStorage;
+
 	// Set up the order book 
 	orderBook book;
 
@@ -69,6 +73,7 @@ public:
 
 	// Getter
 	int getNumConnections();
+	int getBalance(std::string userId);
 
 	// Methods to register handler
 	template<typename CallbackT>
