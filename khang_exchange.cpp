@@ -92,7 +92,9 @@ int main()
 		[&pool, &server](ClientConnection connection, const Json::Value& messageObj) {
 			asio::post(pool,
 			[&server, connection, messageObj]() {
-				server.sendMessage(connection, server.stringifySummary());
+				std::string result = "{\"messageType\": \"retrieveSummary\", \"value\": "
+					+ server.stringifySummary() + "}";
+				server.sendMessage(connection, result);
 			}
 			);
 		}
@@ -137,7 +139,9 @@ int main()
 			asio::post(pool,
 			[&server, connection, messageObj]() {
 					std::string userId = messageObj["userId"].asString();
-					server.sendMessage(connection, std::to_string(server.getBalance(userId)));
+					std::string result = "{\"messageType\": \"getBalance\", \"value\": "
+						+ std::to_string(server.getBalance(userId)) + "}";
+					server.sendMessage(connection, result);
 				}
 			);
 		}
