@@ -37,8 +37,16 @@ add_executable (khang_exchange "khang_exchange.cpp" "khang_exchange.hpp"
 )
 target_link_libraries(khang_exchange PRIVATE fmt::fmt)
 target_link_libraries(khang_exchange PRIVATE websocketpp::websocketpp)
-target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)
 target_link_libraries(khang_exchange PRIVATE asio)
+
+# Apple is also UNIX, but we only want LINUX
+if(UNIX AND NOT APPLE)
+	target_link_libraries(khang_exchange PRIVATE jsoncpp)
+	target_link_libraries(khang_exchange PRIVATE stdc++)
+elseif(WIN32)
+	target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)
+endif()
+
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET khang_exchange PROPERTY CXX_STANDARD 20)

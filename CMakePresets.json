@@ -15,14 +15,11 @@
     },
 
     {
-      "name": "linux-x64",
+      "name": "linux",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
-      "displayName": "Linux x64",
-      "architecture": {
-        "value": "x64"
-      },
+      "displayName": "Linux",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang",

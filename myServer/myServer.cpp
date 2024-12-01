@@ -1,4 +1,4 @@
-#include "myServer.hpp";
+#include "myServer.hpp"
 
 void myServer::onOpen(ClientConnection connection) {
 	std::cout << "Open connection" << std::endl;
