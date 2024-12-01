@@ -13,6 +13,23 @@
         "CMAKE_TOOLCHAIN_FILE": "D:/AA_Apps/VisualStudio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
       }
     },
+
+    {
+      "name": "linux-x64",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "displayName": "Linux x64",
+      "architecture": {
+        "value": "x64"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang",
+        "CMAKE_TOOLCHAIN_FILE": "/home/ubuntu/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+
     {
       "name": "x64-debug",
       "displayName": "x64 Debug",
@@ -29,26 +46,6 @@
       "name": "x64-release",
       "displayName": "x64 Release",
       "inherits": "x64-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "x86-debug",
-      "displayName": "x86 Debug",
-      "inherits": "default",
-      "architecture": {
-        "value": "x86",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "x86-release",
-      "displayName": "x86 Release",
-      "inherits": "x86-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
