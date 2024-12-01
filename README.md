@@ -63,23 +63,19 @@ icacls.exe $path /inheritance:r
 TODO: Make a bash file for all these
 1. Setup git, g++-13, clang, cmake, pkg-config, ninja-build (sudo apt) and vcpkg (git clone the source)
 
-2. Change the "CMAKE_TOOLCHAIN_FILE" attributes in CMakePresets.json to point it to the cmake file of the vcpkg
+2. Change the "CMAKE_TOOLCHAIN_FILE" attributes in CMakePresets.json to point it to the cmake file of the vcpkg (set to the address on my ubuntu server by default)
 
-3. Change the "CMAKE_C_COMPILER": "cl.exe", "CMAKE_CXX_COMPILER": "cl.exe" to "clang"
-
-4. Install the jsoncpp linker library directly through apt (since the vcpkg linking is bugged for some reason):
+3. Install the jsoncpp linker library directly through apt (since the vcpkg linking is bugged for some reason):
 ```
 sudo apt-get install libjsoncpp-dev
 ```
-5. Change the CMakeLists.txt "target_link_libraries(khang_exchange PRIVATE jsoncpp_lib)" to "target_link_libraries(khang_exchange PRIVATE jsoncpp)"
-
-6. Navigate to the the directory contains CMakeLists.txt. 
+4. Navigate to the the directory contains CMakeLists.txt. 
 Run those commands to build the project:
 ```
-cmake --preset=x64-debug
-cmake --build out/build/x64-debug
+cmake --preset=linux
+cmake --build out/build/linux
 ```
-The executable will be in the folder out/build/x64-debug as "khang_exchange"
+The executable will be in the folder out/build/linux as "khang_exchange"
 
 Then, need to open port 8080 to connect.
 ## Open port 8080 for Oracle:
