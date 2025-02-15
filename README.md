@@ -2,6 +2,7 @@
 
 ## Targets:
 1. Set up Websocket echo server: Done
+
 	a. Add json parser: Done
 	
 	b. Handle multiple connections: Done
@@ -36,10 +37,12 @@ the balanced tree: Done
 
 6. Host on Oracle servers: Done (Note below)
 
-7. Add display features: TBC
+7. Add display features: Done
 
 8. Add bots to stimulate market: TBC
 
+Hosting front-end: http://159.13.43.75/ 
+(Server is at: ws://159.13.43.75:8080 )
 ## Run the server
 Guides for Visual Studio 2022 (with vcpkg)
 
